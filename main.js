@@ -11,8 +11,7 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
     // Enter code to find different smells
 
     // Long Parameter List
-
-    // Long methods
+    let long_params_smells=0
     for  (let i=0 ;i<tokenizer.length;i++)
     {
       if(tokenizer[i]=="def")
@@ -27,8 +26,12 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
           break;
         }
         console.log(count+1);
+        if(count+1>4)
+        long_params_smells+=1;
       }
     }
+    // Long methods
+    
     // Wild Card Imports
   };
 
