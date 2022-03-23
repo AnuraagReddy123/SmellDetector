@@ -2,7 +2,7 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
   // This function will detect the smells
   var findSmells = function () {
 
-    
+
     // Replace get_selected_cell with get_all_cell if necessary
     let cell = Jupyter.notebook.get_selected_cell();
     let text = cell.get_text();
@@ -42,7 +42,7 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
       Jupyter.keyboard_manager.actions.register(
         {
           help: 'Detect smells',
-          icon: 'fa-play-circle',
+          icon: 'fa-bolt',
           handler: findSmells,
         },
         'detect-code-smell',
