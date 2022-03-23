@@ -13,7 +13,22 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
     // Long Parameter List
 
     // Long methods
-
+    for  (let i=0 ;i<tokenizer.length;i++)
+    {
+      if(tokenizer[i]=="def")
+      {
+        //i+1 id .i+2 ( 
+        let count=0
+        for(j=i+3;j<tokenizer.length;j++)
+        {
+          if(tokenizer[j]==",")
+          count+=1;
+          else if(tokenizer[j]==")")
+          break;
+        }
+        console.log(count+1);
+      }
+    }
     // Wild Card Imports
   };
 
