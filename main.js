@@ -1,39 +1,45 @@
 define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
   // This function will detect the smells
   var findSmells = function () {
-
-
+    
     // Replace get_selected_cell with get_all_cell if necessary
     let cell = Jupyter.notebook.get_selected_cell();
     let text = cell.get_text();
-    console.log(text);
 
     // Enter code to find different smells
 
     // Long Parameter List
-    let long_params_smells=0
-    for  (let i=0 ;i<tokenizer.length;i++)
-    {
-      if(tokenizer[i]=="def")
-      {
-        //i+1 id .i+2 ( 
-        let count=0
-        for(j=i+3;j<tokenizer.length;j++)
-        {
-          if(tokenizer[j]==",")
-          count+=1;
-          else if(tokenizer[j]==")")
-          break;
+    /*
+    let long_params_smells = 0;
+    let tokenizer = text.match(/\S+/g);
+    console.log(tokenizer)
+
+    for (let i = 0; i < tokenizer.length; i++) {
+      if (tokenizer[i] == 'def') {
+        //i+1 id .i+2 (
+        let count = 0;
+        for (j = i + 3; j < tokenizer.length; j++) {
+          if (tokenizer[j] == ',') count += 1;
+          else if (tokenizer[j] == ')') break;
         }
-        console.log(count+1);
-        if(count+1>4)
-        long_params_smells+=1;
+        console.log(count + 1);
+        if (count + 1 > 4) long_params_smells += 1;
       }
     }
+    */
+    
+    
+    
+    
+    console.log(long_params_smells);
+    
     // Long methods
-    
+
+
+
     // Wild Card Imports
-    
+
+
   };
 
   // Clickable button in toolbar
