@@ -1,8 +1,6 @@
 define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
   // This function will detect the smells
   var findSmells = function () {
-    
-    // Replace get_selected_cell with get_all_cell if necessary
     let cell = Jupyter.notebook.get_selected_cell();
     let text = cell.get_text();
 
@@ -27,18 +25,20 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
       }
     }
     */
-    
-    
-    
-    
-    console.log(long_params_smells);
-    
+
     // Long methods
 
-
-
     // Wild Card Imports
-
+    let count_wildimports = 0;
+    let code_lines = text.split(/[\n]/); // Get each line of python code
+    console.log(code_lines);
+    for (let i = 0; i < code_lines.length; i++) {
+      let line = code_lines[i];
+      console.log(line);
+      if (line.search(/import\*/) !== -1 || line.search(/import \*/) !== -1)
+        count_wildimports++;
+    }
+    console.log("Wild Import Smells: " + count_wildimports);
 
   };
 
