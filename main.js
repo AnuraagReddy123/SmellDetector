@@ -6,7 +6,6 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
     // Replace get_selected_cell with get_all_cell if necessary
     let cell = Jupyter.notebook.get_selected_cell();
     let text = cell.get_text();
-    console.log(text);
 
     // Enter code to find different smells
 
@@ -25,11 +24,12 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
           else if(tokenizer[j]==")")
           break;
         }
-        console.log(count+1);
+        // console.log(count+1);
         if(count+1>4)
         long_params_smells+=1;
       }
     }
+    // console.log(long_params_smells);
     // Long methods
     
     // Wild Card Imports
@@ -42,7 +42,7 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
       Jupyter.keyboard_manager.actions.register(
         {
           help: 'Detect smells',
-          icon: 'fa-bolt',
+          icon: 'fa-play-button',
           handler: findSmells,
         },
         'detect-code-smell',
