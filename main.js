@@ -33,6 +33,7 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
     // Long methods
     
     // Wild Card Imports
+    
   };
 
   // Clickable button in toolbar
