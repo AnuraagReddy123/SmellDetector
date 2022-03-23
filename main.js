@@ -30,6 +30,7 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
       }
     }
     // Wild Card Imports
+    
   };
 
   // Clickable button in toolbar
