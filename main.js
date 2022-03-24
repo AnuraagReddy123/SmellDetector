@@ -56,7 +56,7 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
           if(lines[j].search(/\S|$/) == lines[j].length){
             continue;
           }
-          else if(lines[j].search(/\S|$/) == l){
+          else if(lines[j].search(/\S|$/) >= l){
             cnt++;
           }
           else{
