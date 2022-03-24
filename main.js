@@ -13,23 +13,29 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
       if (line.search(/\bdef\b/) !== -1) {
         // Count the number of commas
         count_long_params += (line.match(/,/g) || []).length;
+        
+        if (count_long_params === 0) {
+          if (line.search(/\(\s*\)/) === -1) {
+            count_long_params++;
+          }
+        } else {
+          count_long_params++;
+        }
+        
+        console.log("Line " + i + ", params: " + count_long_params);
+        count_long_params = 0;
       }
     }
-    if (count_long_params !== 0)
-      count_long_params++;
-    console.log('Long Parameter List smells: ' + count_long_params);
 
-    
     // Long methods
-    lines = text.split("\n");
-    console.log(lines);
-    for(let i=0; i<lines.length; i++){
-      if(lines[i].trim().split(' ')[0] == "def"){
-        let cnt=1;
-        let j=i;
+    lines = text.split('\n');
+    for (let i = 0; i < lines.length; i++) {
+      if (lines[i].trim().split(' ')[0] == 'def') {
+        let cnt = 1;
+        let j = i;
 
         j++;
-        while(j<lines.length && lines[j].search(/\S|$/) == lines[j].length){
+        while (j < lines.length && lines[j].search(/\S|$/) == lines[j].length) {
           j++;
           continue;
         }
@@ -39,22 +45,22 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
         // console.log(lines[j].search(/\S|$/) + " : " + lines[j].length);
 
         j++;
-        
-        for(j; j<lines.length; j++){
+
+        for (j; j < lines.length; j++) {
           // console.log(lines[j].search(/\S|$/) + " : " + lines[j].length);
 
-          if(lines[j].search(/\S|$/) == lines[j].length){
+          if (lines[j].search(/\S|$/) == lines[j].length) {
             continue;
-          }
-          else if(lines[j].search(/\S|$/) >= l){
+          } else if (lines[j].search(/\S|$/) >= l) {
             cnt++;
-          }
-          else{
+          } else {
             break;
           }
         }
-        console.log("Line " + i + " , " + lines[i].trim().split(' ')[1].split('(')[0] + " : " + cnt);
-        i=j-1;
+        console.log(
+          'Line ' + i + ' , ' + lines[i].trim().split(' ')[1].split('(')[0] + ' : ' + cnt
+        );
+        i = j - 1;
       }
     }
     // Test
