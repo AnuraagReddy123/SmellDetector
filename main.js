@@ -50,10 +50,10 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
             cnt++;
           }
           else{
-            console.log("Line " + i + " , " + lines[i].trim().split(' ')[1].split('(')[0] + " : " + cnt);
             break;
           }
         }
+        console.log("Line " + i + " , " + lines[i].trim().split(' ')[1].split('(')[0] + " : " + cnt);
         i=j-1;
       }
     }
