@@ -19,7 +19,44 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
       count_long_params++;
     console.log('Long Parameter List smells: ' + count_long_params);
 
+    
     // Long methods
+    lines = text.split("\n");
+    console.log(lines);
+    for(let i=0; i<lines.length; i++){
+      if(lines[i].trim().split(' ')[0] == "def"){
+        let cnt=1;
+        let j=i;
+
+        j++;
+        while(j<lines.length && lines[j].search(/\S|$/) == lines[j].length){
+          j++;
+          continue;
+        }
+
+        let l = lines[j].search(/\S|$/);
+
+        // console.log(lines[j].search(/\S|$/) + " : " + lines[j].length);
+
+        j++;
+        
+        for(j; j<lines.length; j++){
+          // console.log(lines[j].search(/\S|$/) + " : " + lines[j].length);
+
+          if(lines[j].search(/\S|$/) == lines[j].length){
+            continue;
+          }
+          else if(lines[j].search(/\S|$/) == l){
+            cnt++;
+          }
+          else{
+            console.log("Line " + i + " , " + lines[i].trim().split(' ')[1].split('(')[0] + " : " + cnt);
+            break;
+          }
+        }
+        i=j-1;
+      }
+    }
 
     // Wild Card Imports
     let count_wildimports = 0;
