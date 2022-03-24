@@ -15,6 +15,8 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
         count_long_params += (line.match(/,/g) || []).length;
       }
     }
+    if (count_long_params !== 0)
+      count_long_params++;
     console.log('Long Parameter List smells: ' + count_long_params);
 
     // Long methods
