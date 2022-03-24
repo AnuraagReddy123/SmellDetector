@@ -13,7 +13,7 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
       if (line.search(/\bdef\b/) !== -1) {
         // Count the number of commas
         count_long_params += (line.match(/,/g) || []).length;
-        
+
         if (count_long_params === 0) {
           if (line.search(/\(\s*\)/) === -1) {
             count_long_params++;
@@ -21,8 +21,15 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
         } else {
           count_long_params++;
         }
-        
-        console.log("Line " + i + ", params: " + count_long_params);
+
+        console.log(
+          'Line ' +
+            i +
+            ' ' +
+            line.trim().split(' ')[1].split('(')[0] +
+            ', params: ' +
+            count_long_params
+        );
         count_long_params = 0;
       }
     }
