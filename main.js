@@ -30,6 +30,8 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
             ', params: ' +
             count_long_params
         );
+        if (count_long_params >= 5)
+          console.log('Long Parameter code smell detected');
         count_long_params = 0;
       }
     }
@@ -65,8 +67,14 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
           }
         }
         console.log(
-          'Line ' + i + ' , ' + lines[i].trim().split(' ')[1].split('(')[0] + ' : ' + cnt
+          'Line ' +
+            i +
+            ' , ' +
+            lines[i].trim().split(' ')[1].split('(')[0] +
+            ' : ' +
+            cnt
         );
+        if (cnt >= 100) console.log('Long Methods code smell detected');
         i = j - 1;
       }
     }
@@ -76,24 +84,26 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
     let count_wildimports = 0;
     for (let i = 0; i < code_lines.length; i++) {
       let line = code_lines[i];
-      if (line.search(/import\*/) !== -1 || line.search(/import \*/) !== -1) count_wildimports++;
+      if (line.search(/import\*/) !== -1 || line.search(/import \*/) !== -1)
+        count_wildimports++;
     }
     console.log('Wild Import Smells: ' + count_wildimports);
 
     // Long Message chain
     lines = text.split('\n');
-    for(let i = 0; i < lines.length;++i){
+    for (let i = 0; i < lines.length; ++i) {
       let myArray = lines[i].split('.');
-      if(myArray.length > 1){
+      if (myArray.length > 1) {
         let count = 0;
         myArray = myArray.slice(1);
-        for(let j = 0; j < myArray.length;++j){
-          if(myArray[j].indexOf("(") != -1){
+        for (let j = 0; j < myArray.length; ++j) {
+          if (myArray[j].indexOf('(') != -1) {
             ++count;
           }
         }
-        if(count >= 4){
-          console.log("Long Message chain detected.");
+        if (count >= 4) {
+          console.log(i);
+          console.log('Long Message chain detected.');
         }
       }
     }
