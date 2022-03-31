@@ -53,11 +53,44 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
             break;
           }
         }
-        console.log("Line " + i + " , " + lines[i].trim().split(' ')[1].split('(')[0] + " : " + cnt);
+        console.log("Line : " + i + " , " + lines[i].trim().split(' ')[1].split('(')[0] + " : " + cnt);
         i=j-1;
       }
     }
     // Test
+
+    // Large class
+    for(let i=0; i<lines.length; i++){
+      if(lines[i].trim().split(' ')[0] == "class"){
+        let cnt=1;
+        let j=i;
+
+        j++;
+        while(j<lines.length && lines[j].search(/\S|$/) == lines[j].length){
+          j++;
+          continue;
+        }
+
+        let l = lines[j].search(/\S|$/);
+
+        j++;
+        
+        for(j; j<lines.length; j++){
+
+          if(lines[j].search(/\S|$/) == lines[j].length){
+            continue;
+          }
+          else if(lines[j].search(/\S|$/) >= l){
+            cnt++;
+          }
+          else{
+            break;
+          }
+        }
+        console.log("Line : " + i + " , " + lines[i].trim().split(' ')[1].split('(')[0] + " : " + cnt);
+        i=j-1;
+      }
+    }
 
     // Wild Card Imports
     let count_wildimports = 0;
