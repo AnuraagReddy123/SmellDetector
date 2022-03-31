@@ -79,6 +79,24 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
       if (line.search(/import\*/) !== -1 || line.search(/import \*/) !== -1) count_wildimports++;
     }
     console.log('Wild Import Smells: ' + count_wildimports);
+
+    // Long Message chain
+    lines = text.split('\n');
+    for(let i = 0; i < lines.length;++i){
+      let myArray = lines[i].split('.');
+      if(myArray.length > 1){
+        let count = 0;
+        myArray = myArray.slice(1);
+        for(let j = 0; j < myArray.length;++j){
+          if(myArray[j].indexOf("(") != -1){
+            ++count;
+          }
+        }
+        if(count >= 4){
+          console.log("Long Message chain detected.");
+        }
+      }
+    }
   };
 
   // Clickable button in toolbar
