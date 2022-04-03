@@ -155,7 +155,7 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
       Jupyter.keyboard_manager.actions.register(
         {
           help: 'Detect smells',
-          icon: 'fa-play-button',
+          icon: 'fa-bolt',
           handler: findSmells,
         },
         'detect-code-smell',
