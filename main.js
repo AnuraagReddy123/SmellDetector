@@ -7,6 +7,7 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
     // Long Parameter List
     let count_long_params = 0;
     let code_lines = text.split(/[\n]/); // Get each line of python code
+    console.log('Parameters');
     for (let i = 0; i < code_lines.length; i++) {
       // Find def in code line
       let line = code_lines[i];
@@ -21,7 +22,6 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
         } else {
           count_long_params++;
         }
-
         console.log(
           'Line ' +
             i +
@@ -37,6 +37,7 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
     }
 
     // Long methods
+    console.log('Methods');
     lines = text.split('\n');
     for (let i = 0; i < lines.length; i++) {
       if (lines[i].trim().split(' ')[0] == 'def') {
@@ -81,13 +82,14 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
     // Test
 
     // Large class
-    for(let i=0; i<lines.length; i++){
-      if(lines[i].trim().split(' ')[0] == "class"){
-        let cnt=1;
-        let j=i;
+    console.log('Classes');
+    for (let i = 0; i < lines.length; i++) {
+      if (lines[i].trim().split(' ')[0] == 'class') {
+        let cnt = 1;
+        let j = i;
 
         j++;
-        while(j<lines.length && lines[j].search(/\S|$/) == lines[j].length){
+        while (j < lines.length && lines[j].search(/\S|$/) == lines[j].length) {
           j++;
           continue;
         }
@@ -95,21 +97,26 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
         let l = lines[j].search(/\S|$/);
 
         j++;
-        
-        for(j; j<lines.length; j++){
 
-          if(lines[j].search(/\S|$/) == lines[j].length){
+        for (j; j < lines.length; j++) {
+          if (lines[j].search(/\S|$/) == lines[j].length) {
             continue;
-          }
-          else if(lines[j].search(/\S|$/) >= l){
+          } else if (lines[j].search(/\S|$/) >= l) {
             cnt++;
-          }
-          else{
+          } else {
             break;
           }
         }
-        console.log("Line : " + i + " , " + lines[i].trim().split(' ')[1].split('(')[0] + " : " + cnt);
-        i=j-1;
+        console.log(
+          'Line : ' +
+            i +
+            ' , ' +
+            lines[i].trim().split(' ')[1].split('(')[0] +
+            ' : ' +
+            cnt
+        );
+        if (cnt >= 200) console.log('Long class detected');
+        i = j - 1;
       }
     }
 
