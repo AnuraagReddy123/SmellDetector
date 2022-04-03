@@ -3,6 +3,13 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
   var findSmells = function () {
     let cell = Jupyter.notebook.get_selected_cell();
     let text = cell.get_text();
+    // find the index of the currently selected cell
+    let index = Jupyter.notebook.find_cell_index(cell);
+    // get the cell elements
+    let cell_elements = document.getElementsByClassName("CodeMirror-code");
+    // get the HTML element for the current cell
+    let element_array = cell_elements[index].getElementsByClassName("CodeMirror-line");
+    // console.log(element_array);
 
     // Long Parameter List
     let count_long_params = 0;
@@ -30,8 +37,12 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
             ', params: ' +
             count_long_params
         );
-        if (count_long_params >= 5)
+        if (count_long_params >= 5) {
           console.log('Long Parameter code smell detected');
+          // highlight the line
+          console.log(element_array[i]);
+          element_array[i].style.backgroundColor="#FF7F7F";
+        }
         count_long_params = 0;
       }
     }
@@ -75,7 +86,10 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
             ' : ' +
             cnt
         );
-        if (cnt >= 100) console.log('Long Methods code smell detected');
+        if (cnt >= 100) {
+          console.log('Long Methods code smell detected');
+          element_array[i].style.backgroundColor="#ADD8E6";
+        }
         i = j - 1;
       }
     }
@@ -115,7 +129,10 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
             ' : ' +
             cnt
         );
-        if (cnt >= 200) console.log('Long class detected');
+        if (cnt >= 200) { 
+          console.log('Long class detected');
+          element_array[i].style.backgroundColor="#90EE90";
+        }
         i = j - 1;
       }
     }
@@ -124,8 +141,10 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
     let count_wildimports = 0;
     for (let i = 0; i < code_lines.length; i++) {
       let line = code_lines[i];
-      if (line.search(/import\*/) !== -1 || line.search(/import \*/) !== -1)
+      if (line.search(/import\*/) !== -1 || line.search(/import \*/) !== -1) {
         count_wildimports++;
+        element_array[i].style.backgroundColor="#00FFFF";
+      }
     }
     console.log('Wild Import Smells: ' + count_wildimports);
 
@@ -141,9 +160,9 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
             ++count;
           }
         }
-        if (count >= 4) {
-          console.log(i);
-          console.log('Long Message chain detected.');
+        if(count >= 4){
+          console.log("Long Message chain detected.");
+          element_array[i].style.backgroundColor="#FDFF47";
         }
       }
     }
