@@ -7,6 +7,7 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
     // Long Parameter List
     let count_long_params = 0;
     let code_lines = text.split(/[\n]/); // Get each line of python code
+    console.log('Parameters');
     for (let i = 0; i < code_lines.length; i++) {
       // Find def in code line
       let line = code_lines[i];
@@ -21,7 +22,6 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
         } else {
           count_long_params++;
         }
-
         console.log(
           'Line ' +
             i +
@@ -30,11 +30,14 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
             ', params: ' +
             count_long_params
         );
+        if (count_long_params >= 5)
+          console.log('Long Parameter code smell detected');
         count_long_params = 0;
       }
     }
 
     // Long methods
+    console.log('Methods');
     lines = text.split('\n');
     for (let i = 0; i < lines.length; i++) {
       if (lines[i].trim().split(' ')[0] == 'def') {
@@ -65,21 +68,28 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
           }
         }
         console.log(
-          'Line ' + i + ' , ' + lines[i].trim().split(' ')[1].split('(')[0] + ' : ' + cnt
+          'Line ' +
+            i +
+            ' , ' +
+            lines[i].trim().split(' ')[1].split('(')[0] +
+            ' : ' +
+            cnt
         );
+        if (cnt >= 100) console.log('Long Methods code smell detected');
         i = j - 1;
       }
     }
     // Test
 
     // Large class
-    for(let i=0; i<lines.length; i++){
-      if(lines[i].trim().split(' ')[0] == "class"){
-        let cnt=1;
-        let j=i;
+    console.log('Classes');
+    for (let i = 0; i < lines.length; i++) {
+      if (lines[i].trim().split(' ')[0] == 'class') {
+        let cnt = 1;
+        let j = i;
 
         j++;
-        while(j<lines.length && lines[j].search(/\S|$/) == lines[j].length){
+        while (j < lines.length && lines[j].search(/\S|$/) == lines[j].length) {
           j++;
           continue;
         }
@@ -87,21 +97,26 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
         let l = lines[j].search(/\S|$/);
 
         j++;
-        
-        for(j; j<lines.length; j++){
 
-          if(lines[j].search(/\S|$/) == lines[j].length){
+        for (j; j < lines.length; j++) {
+          if (lines[j].search(/\S|$/) == lines[j].length) {
             continue;
-          }
-          else if(lines[j].search(/\S|$/) >= l){
+          } else if (lines[j].search(/\S|$/) >= l) {
             cnt++;
-          }
-          else{
+          } else {
             break;
           }
         }
-        console.log("Line : " + i + " , " + lines[i].trim().split(' ')[1].split('(')[0] + " : " + cnt);
-        i=j-1;
+        console.log(
+          'Line : ' +
+            i +
+            ' , ' +
+            lines[i].trim().split(' ')[1].split('(')[0] +
+            ' : ' +
+            cnt
+        );
+        if (cnt >= 200) console.log('Long class detected');
+        i = j - 1;
       }
     }
 
@@ -109,24 +124,26 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
     let count_wildimports = 0;
     for (let i = 0; i < code_lines.length; i++) {
       let line = code_lines[i];
-      if (line.search(/import\*/) !== -1 || line.search(/import \*/) !== -1) count_wildimports++;
+      if (line.search(/import\*/) !== -1 || line.search(/import \*/) !== -1)
+        count_wildimports++;
     }
     console.log('Wild Import Smells: ' + count_wildimports);
 
     // Long Message chain
     lines = text.split('\n');
-    for(let i = 0; i < lines.length;++i){
+    for (let i = 0; i < lines.length; ++i) {
       let myArray = lines[i].split('.');
-      if(myArray.length > 1){
+      if (myArray.length > 1) {
         let count = 0;
         myArray = myArray.slice(1);
-        for(let j = 0; j < myArray.length;++j){
-          if(myArray[j].indexOf("(") != -1){
+        for (let j = 0; j < myArray.length; ++j) {
+          if (myArray[j].indexOf('(') != -1) {
             ++count;
           }
         }
-        if(count >= 4){
-          console.log("Long Message chain detected.");
+        if (count >= 4) {
+          console.log(i);
+          console.log('Long Message chain detected.');
         }
       }
     }
