@@ -137,6 +137,32 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
       }
     }
 
+    
+    //long lambda function
+    console.log("Long Lambda Function")
+    lines = text.split('\n');
+    for(let i = 0; i < lines.length; i++){
+      line = lines[i].trim();
+      x = line.indexOf("lambda");
+      if(x == -1)
+        continue
+      
+      count = 0;
+      flag = 0;
+      for(let j = x; j < line.length; j++){
+        if(line[j] == ':'){
+          flag = 1;
+        }
+        if(flag == 1 && line[j] != ' '){
+          count++;
+        }
+      }
+    }
+
+    if(count > 40){
+      console.log("Long Lambda Fuction detected !")
+    }
+
     // Wild Card Imports
     let count_wildimports = 0;
     for (let i = 0; i < code_lines.length; i++) {
