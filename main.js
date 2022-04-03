@@ -3,6 +3,13 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
   var findSmells = function () {
     let cell = Jupyter.notebook.get_selected_cell();
     let text = cell.get_text();
+    // find the index of the currently selected cell
+    let index = Jupyter.notebook.find_cell_index(cell);
+    // get the cell elements
+    let cell_elements = document.getElementsByClassName("CodeMirror-code");
+    // get the HTML element for the current cell
+    let element_array = cell_elements[index].getElementsByClassName("CodeMirror-line");
+    // console.log(element_array);
 
     // Long Parameter List
     let count_long_params = 0;
@@ -127,6 +134,7 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
         }
         if(count >= 4){
           console.log("Long Message chain detected.");
+          element_array[i].style.backgroundColor="#FDFF47";
         }
       }
     }
