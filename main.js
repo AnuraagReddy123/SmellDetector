@@ -157,12 +157,12 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
           count++;
         }
       }
+      if(count > 40){
+        console.log("Long Lambda Fuction detected !")
+        element_array[i].style.backgroundColor="#ff3300";
+      }
     }
 
-    if(count > 40){
-      console.log("Long Lambda Fuction detected !")
-      element_array[i].style.backgroundColor="#ff3300";
-    }
 
     // Wild Card Imports
     let count_wildimports = 0;
