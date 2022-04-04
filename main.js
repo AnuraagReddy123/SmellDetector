@@ -161,6 +161,7 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
 
     if(count > 40){
       console.log("Long Lambda Fuction detected !")
+      element_array[i].style.backgroundColor="#ff3300";
     }
 
     // Wild Card Imports
