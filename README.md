@@ -25,7 +25,7 @@ We are making a tool which will help developers find out about the possible anti
 =>  Displaying the metrics values of detected code smells in the console.
 
 
-# Code Smell                  Threshold                                       Color      
+Code Smell                  Threshold                                       Color      
 Long Parameter list         number of parameters > 5                        Light red
 Long Methods                method lines of code > 100                      Light blue
 Large Class                 lines of code > 200                             Green
