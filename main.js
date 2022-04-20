@@ -4,13 +4,19 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
   var findSmells = function () {
     let cell = Jupyter.notebook.get_selected_cell();
     let text = cell.get_text();
+
     // find the index of the currently selected cell
     let index = Jupyter.notebook.find_cell_index(cell);
+
     // get the cell elements
     let cell_elements = document.getElementsByClassName("CodeMirror-code");
+
     // get the HTML element for the current cell
     let element_array = cell_elements[index].getElementsByClassName("CodeMirror-line");
+
+
     // console.log(element_array);
+
 
     // Long Parameter List
     let count_long_params = 0;
@@ -160,6 +166,7 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
       }
     }
 
+
     // Long methods
     console.log('Methods');
     lines = text.split('\n');
@@ -206,7 +213,7 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
         i = j - 1;
       }
     }
-    // Test
+
 
     // Large class
     console.log('Classes');
@@ -288,6 +295,38 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
     }
     console.log('Wild Import Smells: ' + count_wildimports);
 
+
+    // Running cells out of order
+    let cells1 = document.getElementsByClassName("input_prompt")
+    let num_of_cells = Jupyter.notebook.get_cells().length;
+    let out_of_order_cells = [];
+
+    for(let i=0; i<num_of_cells-1; i++){
+      let x = cells1[i].textContent;
+      
+      if(/^-?\d+$/.test(x.substring(4, x.length-2))){
+        j = i+1;
+        while(j < num_of_cells && !(/^-?\d+$/.test(cells1[j].textContent.substring(4, cells1[j].textContent.length-2)))){
+          j++
+        }
+
+        if(j < num_of_cells){
+          let y = cells1[j].textContent;
+          if(Number(x.substring(4, x.length-2)) > Number(y.substring(4, y.length-2))){
+            out_of_order_cells.push(i);
+            cells1[i].style.backgroundColor="#00FFFF";
+          }
+        }  
+
+      }
+    }
+
+    console.log('Cells run in out of order : ', out_of_order_cells);
+
+    // var wrapper = <div class="alert"><span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>This is an alert box.</div>;
+    // cells1.parentNode.insertBefore(wrapper, cells1);
+
+
     // Long Message chain
     lines = text.split('\n');
     for (let i = 0; i < lines.length; ++i) {
@@ -307,6 +346,7 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
       }
     }
   };
+
 
   // Clickable button in toolbar
   var detectSmellButton = function () {
