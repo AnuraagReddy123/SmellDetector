@@ -17,6 +17,68 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
 
     // console.log(element_array);
 
+    function myFunction() {
+      var popup = document.getElementById("myPopup");
+      popup.classList.toggle("show");
+    }
+    var a = document.createElement("div");
+    a.innerHTML = "<div class=\"popup\" onclick=\"myFunction\">Click me\! <span class=\"popuptext\" id=\"myPopup\">Popup text...</span> </div>"
+    var styles = `/* Popup container */
+    .popup {
+      position: relative;
+      display: inline-block;
+      cursor: pointer;
+    }
+    
+    /* The actual popup (appears on top) */
+    .popup .popuptext {
+      visibility: hidden;
+      width: 160px;
+      background-color: #555;
+      color: #fff;
+      text-align: center;
+      border-radius: 6px;
+      padding: 8px 0;
+      position: absolute;
+      z-index: 1;
+      bottom: 125%;
+      left: 50%;
+      margin-left: -80px;
+    }
+    
+    /* Popup arrow */
+    .popup .popuptext::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      margin-left: -5px;
+      border-width: 5px;
+      border-style: solid;
+      border-color: #555 transparent transparent transparent;
+    }
+    
+    /* Toggle this class when clicking on the popup container (hide and show the popup) */
+    .popup .show {
+      visibility: visible;
+      -webkit-animation: fadeIn 1s;
+      animation: fadeIn 1s
+    }
+    
+    /* Add animation (fade in the popup) */
+    @-webkit-keyframes fadeIn {
+      from {opacity: 0;}
+      to {opacity: 1;}
+    }
+    
+    @keyframes fadeIn {
+      from {opacity: 0;}
+      to {opacity:1 ;}
+    }` 
+    var styleSheet = document.createElement("style")
+    styleSheet.innerText = styles;
+    document.head.appendChild(styleSheet);
+
 
     // Long Parameter List
     let count_long_params = 0;
@@ -291,6 +353,7 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
       if (line.search(/import\*/) !== -1 || line.search(/import \*/) !== -1) {
         count_wildimports++;
         element_array[i].style.backgroundColor="#00FFFF";
+
       }
       
     }
@@ -301,8 +364,8 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
       let line = code_lines[i];
       if (line.search(/import/) !== -1 && index != 0) {
         element_array[i].style.backgroundColor="#FFA500";
+        element_array[i].appendChild(a);
       }
-      
     }
 
     // Running cells out of order
