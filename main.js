@@ -1,15 +1,22 @@
 define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
+  
   // This function will detect the smells
   var findSmells = function () {
     let cell = Jupyter.notebook.get_selected_cell();
     let text = cell.get_text();
+
     // find the index of the currently selected cell
     let index = Jupyter.notebook.find_cell_index(cell);
+
     // get the cell elements
     let cell_elements = document.getElementsByClassName("CodeMirror-code");
+
     // get the HTML element for the current cell
     let element_array = cell_elements[index].getElementsByClassName("CodeMirror-line");
+
+
     // console.log(element_array);
+
 
     // Long Parameter List
     let count_long_params = 0;
@@ -46,6 +53,119 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
         count_long_params = 0;
       }
     }
+    //color contrastjupyter
+    //accepted color format rgb hex,rgba hex,cycle color,single letter,color name
+    function hexToRgb(hex) {
+      // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
+      var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+      hex = hex.replace(shorthandRegex, function(m, r, g, b) {
+        return r + r + g + g + b + b;
+      });
+    
+      var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+      } : null;
+    }
+    function luminance(r, g, b) {
+        var a = [r, g, b].map(function (v) {
+            v /= 255;
+            return v <= 0.03928
+                ? v / 12.92
+                : Math.pow( (v + 0.055) / 1.055, 2.4 );
+        });
+        return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
+    }
+    function contrast(rgb1, rgb2) {
+        var lum1 = luminance(rgb1[0], rgb1[1], rgb1[2]);
+        var lum2 = luminance(rgb2[0], rgb2[1], rgb2[2]);
+        var brightest = Math.max(lum1, lum2);
+        var darkest = Math.min(lum1, lum2);
+        return (brightest + 0.05)
+            / (darkest + 0.05);
+    }
+    lines = text.split('\n')
+    colors = []
+    convert = new Map([
+      ["C0", "#1f77b4"],
+      ["C1", "#ff7f0e"],
+      ["C2", "#2ca02c"],
+      ["C3", "#d62728"],
+      ["C4", "#9467bd"],
+      ["C5", "#8c564b"],
+      ["C6", "#e377c2"],
+      ["C7", "#7f7f7f"],
+      ["C8", "#bcbd22"],
+      ["C9", "#17becf"],
+      ["r" , "#ff0000"],
+      ["g" , "#00FF00"],
+      ["b" , "#0000FF"],
+      ["c" , "#00FFFF"],
+      ["m" , "#ff00ff"],
+      ["y" , "#FFFF00"],
+      ["k" , "#000000"],
+      ["w" , "#FFFFFF"],
+      ["red" , "#ff0000"],
+      ["green" , "#00FF00"],
+      ["blue" , "#0000FF"],
+      ["cyan" , "#00FFFF"],
+      ["magenta" , "#ff00ff"],
+      ["yellow" , "#FFFF00"],
+      ["black" , "#000000"],
+      ["white" , "#FFFFFF"]
+    ]);
+    for(let i=0;i<lines.length;i++)
+    {
+        let result =lines[i].search('color')
+        let color = ""
+        if(result!=-1)
+        {
+          for(j =result+7;j<lines[i].length;j++)
+        {
+          if(lines[i][j]==="'")
+          break;
+          color = color.concat(lines[i][j])
+        }
+        if(color[0]!=='#')
+        {
+          console.log("convert",convert.get(color))
+          colors.push(convert.get(color))
+        }
+        else
+        {
+          if(color.length>7)
+          colors.push(color.substring(0,7).slice())
+          else
+          colors.push(color.slice())
+        }
+        }
+    }
+    console.log("colors in cell:",colors)
+    if(colors.length>1)
+    {
+      for(let i =0;i<colors.length;i++)
+      {
+        for(j=i+1;j<colors.length;j++)
+        {
+          c1=[]
+          c2=[]
+          r1 = hexToRgb(colors[i])
+          r2 = hexToRgb(colors[j])
+          c1.push(r1.r)
+          c1.push(r1.g)
+          c1.push(r1.b)
+          c2.push(r2.r)
+          c2.push(r2.g)
+          c2.push(r2.b)
+          ans = contrast(c1,c2)
+          if(ans<3)
+          console.log(ans,"low contrast for colors",colors[i]," ",colors[j])
+        }
+      }
+    }
+
 
     // Long methods
     console.log('Methods');
@@ -93,7 +213,7 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
         i = j - 1;
       }
     }
-    // Test
+
 
     // Large class
     console.log('Classes');
@@ -182,6 +302,38 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
     }
     console.log('Wild Import Smells: ' + count_wildimports);
 
+
+    // Running cells out of order
+    let cells1 = document.getElementsByClassName("input_prompt")
+    let num_of_cells = Jupyter.notebook.get_cells().length;
+    let out_of_order_cells = [];
+
+    for(let i=0; i<num_of_cells-1; i++){
+      let x = cells1[i].textContent;
+      
+      if(/^-?\d+$/.test(x.substring(4, x.length-2))){
+        j = i+1;
+        while(j < num_of_cells && !(/^-?\d+$/.test(cells1[j].textContent.substring(4, cells1[j].textContent.length-2)))){
+          j++
+        }
+
+        if(j < num_of_cells){
+          let y = cells1[j].textContent;
+          if(Number(x.substring(4, x.length-2)) > Number(y.substring(4, y.length-2))){
+            out_of_order_cells.push(i);
+            cells1[i].style.backgroundColor="#00FFFF";
+          }
+        }  
+
+      }
+    }
+
+    console.log('Cells run in out of order : ', out_of_order_cells);
+
+    // var wrapper = <div class="alert"><span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>This is an alert box.</div>;
+    // cells1.parentNode.insertBefore(wrapper, cells1);
+
+
     // Long Message chain
     lines = text.split('\n');
     for (let i = 0; i < lines.length; ++i) {
@@ -201,6 +353,7 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
       }
     }
   };
+
 
   // Clickable button in toolbar
   var detectSmellButton = function () {
