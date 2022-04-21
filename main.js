@@ -114,7 +114,7 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
       ["magenta" , "#ff00ff"],
       ["yellow" , "#FFFF00"],
       ["black" , "#000000"],
-      ["white" , "#FFFFFF"]
+      ["white" , "#FFFFFF"],
     ]);
     for(let i=0;i<lines.length;i++)
     {
@@ -292,9 +292,18 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
         count_wildimports++;
         element_array[i].style.backgroundColor="#00FFFF";
       }
+      
     }
     console.log('Wild Import Smells: ' + count_wildimports);
 
+    // check if import statements are present and not in first cell
+    for (let i = 0; i < code_lines.length; i++) {
+      let line = code_lines[i];
+      if (line.search(/import/) !== -1 && index != 0) {
+        element_array[i].style.backgroundColor="#FFA500";
+      }
+      
+    }
 
     // Running cells out of order
     let cells1 = document.getElementsByClassName("input_prompt")
