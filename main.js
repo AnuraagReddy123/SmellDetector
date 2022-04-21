@@ -325,15 +325,15 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
             out_of_order_cells.push(i);
             cells1[i].style.backgroundColor="#00FFFF";
           }
+          else{
+            cells1[i].style.backgroundColor="transparent";
+          }
         }  
 
       }
     }
 
     console.log('Cells run in out of order : ', out_of_order_cells);
-
-    // var wrapper = <div class="alert"><span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>This is an alert box.</div>;
-    // cells1.parentNode.insertBefore(wrapper, cells1);
 
 
     // Long Message chain
