@@ -2,6 +2,9 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
   
   // This function will detect the smells
   var findSmells = function () {
+
+    detectTypeChange();
+
     let cell = Jupyter.notebook.get_selected_cell();
     let text = cell.get_text();
 
@@ -356,6 +359,31 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
     }
   };
 
+  var detectTypeChange = function() {
+    var headScript = document.createElement("SCRIPT");
+    // include the pyodide.js file
+    headScript.src = "https://pyodide-cdn2.iodide.io/v0.15.0/full/pyodide.js";
+    document.head.appendChild(headScript);
+    let pythonCode = ""; // the code to be run on python shell
+    let cells = Jupyter.notebook.get_cells(); // get all the cells in the notebook
+    // iterate over all the cells
+    for (let i = 0; i < cells.length;++i){
+      // check if the cell is a code cell
+      if (cells[i].cell_type == 'code'){
+        cellText = cells[i].get_text(); // fetch the text of the code cell
+        textArray = cellText.split("\n"); 
+        for (let j = 0; j < textArray.length;++j){
+          // check if the line contains an import statement
+          if(textArray[j].search(/import/) != -1){
+            pythonCode += textArray[j] + "\n";
+          }
+        }
+      }
+    }
+    console.log(pythonCode);
+    pyodide.runPythonAsync(pythonCode)
+      .then(output => console.log(output)) 
+  };
 
   // Clickable button in toolbar
   var detectSmellButton = function () {
