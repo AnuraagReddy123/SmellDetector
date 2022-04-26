@@ -20,8 +20,71 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
 
     // console.log(element_array);
 
+    function myFunction() {
+      var popup = document.getElementById("myPopup");
+      popup.classList.toggle("show");
+    }
+    var a = document.createElement("div");
+    a.innerHTML = "<div class=\"popup\" onclick=\"myFunction\">Click me\! <span class=\"popuptext\" id=\"myPopup\">Popup text...</span> </div>"
+    var styles = `/* Popup container */
+    .popup {
+      position: relative;
+      display: inline-block;
+      cursor: pointer;
+    }
+    
+    /* The actual popup (appears on top) */
+    .popup .popuptext {
+      visibility: hidden;
+      width: 160px;
+      background-color: #555;
+      color: #fff;
+      text-align: center;
+      border-radius: 6px;
+      padding: 8px 0;
+      position: absolute;
+      z-index: 1;
+      bottom: 125%;
+      left: 50%;
+      margin-left: -80px;
+    }
+    
+    /* Popup arrow */
+    .popup .popuptext::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      margin-left: -5px;
+      border-width: 5px;
+      border-style: solid;
+      border-color: #555 transparent transparent transparent;
+    }
+    
+    /* Toggle this class when clicking on the popup container (hide and show the popup) */
+    .popup .show {
+      visibility: visible;
+      -webkit-animation: fadeIn 1s;
+      animation: fadeIn 1s
+    }
+    
+    /* Add animation (fade in the popup) */
+    @-webkit-keyframes fadeIn {
+      from {opacity: 0;}
+      to {opacity: 1;}
+    }
+    
+    @keyframes fadeIn {
+      from {opacity: 0;}
+      to {opacity:1 ;}
+    }` 
+    var styleSheet = document.createElement("style")
+    styleSheet.innerText = styles;
+    document.head.appendChild(styleSheet);
 
-    // Long Parameter List
+
+
+    // ------------------------------------------------Long Parameter List------------------------------------------
     let count_long_params = 0;
     let code_lines = text.split(/[\n]/); // Get each line of python code
     console.log('Parameters');
@@ -56,7 +119,11 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
         count_long_params = 0;
       }
     }
-    //color contrastjupyter
+
+
+
+    //-----------------------------------------color contrastjupyter---------------------------------------
+
     //accepted color format rgb hex,rgba hex,cycle color,single letter,color name
     function hexToRgb(hex) {
       // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
@@ -169,46 +236,42 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
       }
     }
 
+    
 
-    // Long methods
+    // ---------------------------------------------Long methods--------------------------------------------
     console.log('Methods');
+    // splitting current cell text to array of individual lines in cell
     lines = text.split('\n');
     for (let i = 0; i < lines.length; i++) {
-      if (lines[i].trim().split(' ')[0] == 'def') {
+      if (lines[i].trim().split(' ')[0] === 'def') {
         let cnt = 1;
         let j = i;
 
         j++;
-        while (j < lines.length && lines[j].search(/\S|$/) == lines[j].length) {
+        // searching for first non comment and non empty line in the method
+        while (j < lines.length && lines[j].search(/\S|$/) === lines[j].length || lines[j].trim()[0] === '#') {
           j++;
           continue;
         }
 
+        // l will store the length of first non space character from start of line
         let l = lines[j].search(/\S|$/);
-
-        // console.log(lines[j].search(/\S|$/) + " : " + lines[j].length);
 
         j++;
 
         for (j; j < lines.length; j++) {
-          // console.log(lines[j].search(/\S|$/) + " : " + lines[j].length);
-
-          if (lines[j].search(/\S|$/) == lines[j].length) {
+          if (lines[j].search(/\S|$/) === lines[j].length || lines[j].trim()[0] === '#') {  // if line is empty or it is comment line
             continue;
-          } else if (lines[j].search(/\S|$/) >= l) {
+          } else if (lines[j].search(/\S|$/) >= l) { 
             cnt++;
-          } else {
+          } else {  // end of method
             break;
           }
         }
-        console.log(
-          'Line ' +
-            i +
-            ' , ' +
-            lines[i].trim().split(' ')[1].split('(')[0] +
-            ' : ' +
-            cnt
-        );
+
+        console.log('Line ' + i + ' , ' + lines[i].trim().split(' ')[1].split('(')[0] + ' : ' + cnt);
+
+        // threshold for long method = 100
         if (cnt >= 100) {
           console.log('Long Methods code smell detected');
           element_array[i].style.backgroundColor="#ADD8E6";
@@ -218,32 +281,36 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
     }
 
 
-    // Large class
+
+    // -----------------------------------------Large class-----------------------------------------
     console.log('Classes');
     for (let i = 0; i < lines.length; i++) {
-      if (lines[i].trim().split(' ')[0] == 'class') {
+      if (lines[i].trim().split(' ')[0] === 'class') {
         let cnt = 1;
         let j = i;
 
         j++;
-        while (j < lines.length && lines[j].search(/\S|$/) == lines[j].length) {
+        // searching for first non comment and non empty line in the method
+        while (j < lines.length && lines[j].search(/\S|$/) === lines[j].length || lines[j].trim()[0] === '#') {
           j++;
           continue;
         }
 
+        // l will store the length of first non space character from start of line
         let l = lines[j].search(/\S|$/);
 
         j++;
 
         for (j; j < lines.length; j++) {
-          if (lines[j].search(/\S|$/) == lines[j].length) {
+          if (lines[j].search(/\S|$/) === lines[j].length  || lines[j].trim()[0] === '#') { // if line is empty or it is comment line
             continue;
           } else if (lines[j].search(/\S|$/) >= l) {
             cnt++;
-          } else {
+          } else {  // end of class
             break;
           }
         }
+
         console.log(
           'Line : ' +
             i +
@@ -252,6 +319,8 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
             ' : ' +
             cnt
         );
+
+        // threshold for large class = 200
         if (cnt >= 200) { 
           console.log('Long class detected');
           element_array[i].style.backgroundColor="#90EE90";
@@ -260,8 +329,9 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
       }
     }
 
+
     
-    //long lambda function
+    // ------------------------------------------------long lambda function----------------------------------
     console.log("Long Lambda Function")
     lines = text.split('\n');
     for(let i = 0; i < lines.length; i++){
@@ -287,28 +357,35 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
     }
 
 
-    // Wild Card Imports
+
+    // --------------------------------------------Wild Card Imports------------------------------------
     let count_wildimports = 0;
     for (let i = 0; i < code_lines.length; i++) {
       let line = code_lines[i];
       if (line.search(/import\*/) !== -1 || line.search(/import \*/) !== -1) {
         count_wildimports++;
         element_array[i].style.backgroundColor="#00FFFF";
+
       }
       
     }
     console.log('Wild Import Smells: ' + count_wildimports);
 
-    // check if import statements are present and not in first cell
+
+
+    // ----------------------check if import statements are present and not in first cell-------------------
     for (let i = 0; i < code_lines.length; i++) {
       let line = code_lines[i];
       if (line.search(/import/) !== -1 && index != 0) {
         element_array[i].style.backgroundColor="#FFA500";
+        element_array[i].appendChild(a);
       }
-      
     }
 
-    // Running cells out of order
+
+
+    // -----------------------------------------Running cells out of order-----------------------------------------
+
     let cells1 = document.getElementsByClassName("input_prompt")
     let num_of_cells = Jupyter.notebook.get_cells().length;
     let out_of_order_cells = [];
@@ -339,7 +416,101 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
     console.log('Cells run in out of order : ', out_of_order_cells);
 
 
-    // Long Message chain
+
+
+    // --------------------------------------unused variables-------------------------------------------
+
+    variables = new Set();
+    variableIndex = {};
+    unusedVariables = new Set();
+
+    // iterating each cell
+    for(let i=0; i<num_of_cells; i++){
+      let cellText = Jupyter.notebook.get_cells()[i].get_text();
+      let cellLines = cellText.split('\n');
+
+      // iterating each line of cell
+      for(let k=0; k<cellLines.length; k++){
+
+        // searching for strings with : "variable_name = "
+        let assignExpressions = cellLines[k].trim().match(/^(([a-zA-Z_]([a-zA-Z_]|[0-9])*)\s*=)/);
+        
+        if(assignExpressions !== null){
+          let exprVar = assignExpressions[0].substring(0, assignExpressions[0].indexOf('=')).trim();
+          variables.add(exprVar);
+          if(!(exprVar in variableIndex)){
+            variableIndex[exprVar] = [i, k];
+          }
+        }
+      }
+
+    }
+
+    console.log("vars", variableIndex)
+
+    lhsVarCount = {};
+    let setIterator = variables.values();
+    for(const variable of setIterator){
+      lhsVarCount[variable] = 0;
+
+      // searching for assignment expressions where "variable" is used on right hand side of the expressions.
+      // if "variable" is present on RHS of a asignment then we can conclude that it is not a unused a variable
+      // Also if "variable" is present in return statement of a function, then too we can conclude it is not a unused variable
+      let pattern = "^((([a-zA-Z_]([a-zA-Z_]|[0-9])*)\\s*=)|return)\\s*(.*[^_a-zA-Z0-9])?(" + variable + "([^_a-zA-Z0-9](.|[\\n])*)|" +  variable + "$)";
+      let regex = new RegExp(pattern, "g");
+
+      // iterating each cell
+      for(let i=0; i<num_of_cells; i++){
+        let cellText = Jupyter.notebook.get_cells()[i].get_text();
+        let cellLines = cellText.split('\n');
+        
+        // iterating each line of cell
+        for(let k=0; k<cellLines.length; k++){
+
+          usedExpressions = cellLines[k].trim().match(regex);
+          
+          if(usedExpressions !== null){
+            let exprVar = usedExpressions[0].substring(0, usedExpressions[0].indexOf('=')).trim();
+            if(exprVar !== variable){
+              lhsVarCount[variable] += 1;
+            }
+          }
+
+        }
+      }
+
+      if(lhsVarCount[variable] === 0){
+        unusedVariables.add(variable);
+        cell_elements[variableIndex[variable][0]].getElementsByClassName("CodeMirror-line")[variableIndex[variable][1]].style.backgroundColor="#C1008C";
+      }
+    }
+
+    console.log("unused varibles", unusedVariables);
+
+    //----------------------------------------------print without function--------------------------------------- 
+    lines = text.split('\n')
+    count = 0;
+    list = []
+    for(let i=0;i<lines.length;i++)
+    {
+      variables.forEach (function(value) {
+        if(value === lines[i])
+        count++,list.push(i);
+      })
+    }
+    console.log("print without function",count)
+    if(count>1)
+    {
+      console.log(list)
+      for( let  i=0;i<count;i++)
+      {
+        element_array[list[i]].style.backgroundColor="#45b6fe";
+      }
+    }
+    
+
+
+    // ----------------------------------------------Long Message chain-------------------------------------------
     lines = text.split('\n');
     for (let i = 0; i < lines.length; ++i) {
       let myArray = lines[i].split('.');
