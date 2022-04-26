@@ -484,6 +484,26 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
 
     console.log("unused varibles", unusedVariables);
 
+    //----------------------------------------------print without function--------------------------------------- 
+    lines = text.split('\n')
+    count = 0;
+    list = []
+    for(let i=0;i<lines.length;i++)
+    {
+      variables.forEach (function(value) {
+        if(value === lines[i])
+        count++,list.push(i);
+      })
+    }
+    console.log("print without function",count)
+    if(count>1)
+    {
+      console.log(list)
+      for( let  i=0;i<count;i++)
+      {
+        element_array[list[i]].style.backgroundColor="#45b6fe";
+      }
+    }
     
 
 
