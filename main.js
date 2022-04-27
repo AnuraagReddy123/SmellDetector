@@ -504,6 +504,39 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
         element_array[list[i]].style.backgroundColor="#45b6fe";
       }
     }
+
+    //----------------------------------------------Code containing drop or remove in cell ---------------------------------------
+    lines = text.split('\n')
+    count = 0;
+    list = [];
+    flag = 0;
+    for(let i=0;i<lines.length;i++)
+    {
+      if(lines[i].includes("drop") || lines[i].includes("remove"))
+      flag = 1;
+    }
+
+    if (flag == 1) {
+      // Find lines not containing drop or remove
+      for(let i=0;i<lines.length;i++)
+      {
+        if(!lines[i].includes("drop") && !lines[i].includes("remove")) {
+          count++;
+          list.push(i);
+        }
+      }
+    }
+
+    console.log("Code containing drop or remove in cell",count)
+    if(count>1)
+    {
+      console.log(list)
+      for( let  i=0;i<count;i++)
+      {
+        element_array[list[i]].style.backgroundColor="#FF69B4";
+      }
+    }
+
     
 
 
