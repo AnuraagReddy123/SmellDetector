@@ -453,7 +453,7 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
       // searching for assignment expressions where "variable" is used on right hand side of the expressions.
       // if "variable" is present on RHS of a asignment then we can conclude that it is not a unused a variable
       // Also if "variable" is present in return statement of a function, then too we can conclude it is not a unused variable
-      let pattern = "^((([a-zA-Z_]([a-zA-Z_]|[0-9])*)\\s*=)|return)\\s*(.*[^_a-zA-Z0-9])?(" + variable + "([^_a-zA-Z0-9](.|[\\n])*)|" +  variable + "$)";
+      let pattern = "^((([a-zA-Z_]([a-zA-Z_]|[0-9])*)\\s*=)|return|print\\()\\s*(.*[^_a-zA-Z0-9])?(" + variable + "([^_a-zA-Z0-9](.|[\\n])*)|" +  variable + "$)";
       let regex = new RegExp(pattern, "g");
 
       // iterating each cell
@@ -483,59 +483,6 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
     }
 
     console.log("unused varibles", unusedVariables);
-
-    //----------------------------------------------print without function--------------------------------------- 
-    lines = text.split('\n')
-    count = 0;
-    list = []
-    for(let i=0;i<lines.length;i++)
-    {
-      variables.forEach (function(value) {
-        if(value === lines[i])
-        count++,list.push(i);
-      })
-    }
-    console.log("print without function",count)
-    if(count>1)
-    {
-      console.log(list)
-      for( let  i=0;i<count;i++)
-      {
-        element_array[list[i]].style.backgroundColor="#45b6fe";
-      }
-    }
-
-    //----------------------------------------------Code containing drop or remove in cell ---------------------------------------
-    lines = text.split('\n')
-    count = 0;
-    list = [];
-    flag = 0;
-    for(let i=0;i<lines.length;i++)
-    {
-      if(lines[i].includes("drop") || lines[i].includes("remove"))
-      flag = 1;
-    }
-
-    if (flag == 1) {
-      // Find lines not containing drop or remove
-      for(let i=0;i<lines.length;i++)
-      {
-        if(!lines[i].includes("drop") && !lines[i].includes("remove")) {
-          count++;
-          list.push(i);
-        }
-      }
-    }
-
-    console.log("Code containing drop or remove in cell",count)
-    if(count>1)
-    {
-      console.log(list)
-      for( let  i=0;i<count;i++)
-      {
-        element_array[list[i]].style.backgroundColor="#FF69B4";
-      }
-    }
 
     
 
