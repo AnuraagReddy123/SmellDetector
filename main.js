@@ -304,6 +304,13 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
       }
     }
 
+    
+    //Fat Cell
+    n = lines.length;
+    if(n > 250){
+      console.log("Fat Cell detected! : " + n + " lines");
+    }
+
 
 
     // --------------------------------------------Wild Card Imports------------------------------------
