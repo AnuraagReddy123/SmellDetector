@@ -317,7 +317,7 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
       }
       
     }
-    console.log('Wild Import Smells: ' + count_wildimports);
+    codesmells += "Wild Import Smells: " + count_wildimports + "\n";
 
 
 
@@ -326,6 +326,7 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
       let line = code_lines[i];
       if (line.search(/import/) !== -1 && index != 0) {
         element_array[i].style.backgroundColor="#FFA500";
+        codesmells += "imports not in first cell\n";
       }
     }
 
@@ -511,7 +512,7 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
           }
         }
         if(count >= 4){
-          console.log("Long Message chain detected.");
+          codesmells += "Long Message chain detected.\n";
           element_array[i].style.backgroundColor="#FDFF47";
         }
       }
