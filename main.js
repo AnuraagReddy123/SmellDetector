@@ -217,11 +217,13 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
           }
         }
 
-        console.log('Line ' + i + ' , ' + lines[i].trim().split(' ')[1].split('(')[0] + ' : ' + cnt);
+        let funName = lines[i].trim().split(' ')[1].split('(')[0];
+        console.log('Line ' + i + ' , ' + funName + ' : ' + cnt);
 
         // threshold for long method = 100
-        if (cnt >= 100) {
+        if (cnt >= 1) {
           console.log('Long Methods code smell detected');
+          codesmells += "<b>Long Method</b> " + funName + " at Line : " + i + " having " + cnt + " lines</br>";
           element_array[i].style.backgroundColor="#ADD8E6";
         }
         i = j - 1;
@@ -259,18 +261,20 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
           }
         }
 
+        let class_Name = lines[i].trim().split(' ')[1].split('(')[0];
         console.log(
           'Line : ' +
             i +
             ' , ' +
-            lines[i].trim().split(' ')[1].split('(')[0] +
+            class_Name +
             ' : ' +
             cnt
         );
 
         // threshold for large class = 200
-        if (cnt >= 200) { 
+        if (cnt >= 1) { 
           console.log('Long class detected');
+          codesmells += "<b>Long Class</b> " + class_Name + " at Line : " + i + " having " + cnt + " lines</br>";
           element_array[i].style.backgroundColor="#90EE90";
         }
         i = j - 1;
@@ -367,6 +371,8 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
 
     // --------------------------------------unused variables-------------------------------------------
 
+    codesmells += "<b>Unused Variables</b></br>";
+    // codesmells += "Cell Line variable</br>";
     variables = new Set();
     variableIndex = {};
     unusedVariables = new Set();
@@ -428,12 +434,15 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
 
       if(lhsVarCount[variable] === 0){
         unusedVariables.add(variable);
-        cell_elements[variableIndex[variable][0]].getElementsByClassName("CodeMirror-line")[variableIndex[variable][1]].style.backgroundColor="#C1008C";
+        let cellNo = variableIndex[variable][0];
+        let lineNo = variableIndex[variable][1];
+        cell_elements[cellNo].getElementsByClassName("CodeMirror-line")[lineNo].style.backgroundColor="#C1008C";
+        codesmells += "cell: " + cellNo + " line: " + lineNo + " : " + variable + "</br>";
       }
     }
 
     console.log("unused varibles", unusedVariables);
-    codesmells += "unused varibles" + unusedVariables;
+    codesmells += "</br>";
 
     var a = document.createElement("div");
     a.innerHTML = "<div class=\"smellDetectorPopup popup\" id=\"kishorpopup\" onclick=\"myFunction()\">Click me\! <span class=\"popuptext\" id=\"myPopup\">" + codesmells + "</span> </div>"
@@ -442,6 +451,7 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
       position: relative;
       display: inline-block;
       cursor: pointer;
+      width: 200
     }
     
     /* The actual popup (appears on top) */
@@ -454,7 +464,7 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
       border-radius: 6px;
       padding: 8px 0;
       position: absolute;
-      z-index: 1;
+      z-index: 100;
       bottom: 125%;
       left: 50%;
       margin-left: -80px;
