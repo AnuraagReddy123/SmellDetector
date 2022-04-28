@@ -328,12 +328,16 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
 
 
 
-    // ----------------------check if import statements are present and not in first cell-------------------
+    // ----------------------check if import statements and terminal commands are present and not in first cell-------------------
     for (let i = 0; i < code_lines.length; i++) {
       let line = code_lines[i];
       if (line.search(/import/) !== -1 && index != 0) {
         element_array[i].style.backgroundColor="#FFA500";
         codesmells += "imports not in first cell\n";
+      }
+      if(line.search(/\!pip/) != -1 && index != 0){
+        element_array[i].style.backgroundColor="#FFF500";
+        codesmells += "pip not in first cell\n";
       }
     }
 
