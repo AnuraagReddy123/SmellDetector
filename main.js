@@ -1,7 +1,11 @@
 define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
   
-  // This function will detect the smells
+    // This function will detect the smells
   var findSmells = function () {
+    
+    if(document.getElementById("kishorpopup")){
+      document.getElementById("kishorpopup").remove();
+    }
 
     let cell = Jupyter.notebook.get_selected_cell();
     let text = cell.get_text();
@@ -14,9 +18,9 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
 
     // get the HTML element for the current cell
     let element_array = cell_elements[index].getElementsByClassName("CodeMirror-line");
-    let prompt = document.getElementsByClassName("prompt")[index];
+    let prompt = document.getElementsByClassName("selected")[0].getElementsByClassName("prompt")[0];
     let func_script = document.createElement("script");
-    func_script.innerHTML = "function myFunction() { var popup = document.getElementById(\"myPopup\"); popup.classList.toggle(\"show\"); }"
+    func_script.innerHTML = "function myFunction() { var popup = document.getElementById(\"myPopup\"); popup.classList.toggle(\"show\"); div.remove()}"
     document.head.appendChild(func_script);
     // console.log(element_array);
 
@@ -24,64 +28,8 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
     //   var popup = document.getElementById("myPopup");
     //   popup.classList.toggle("show");
     // }
-    var a = document.createElement("div");
-    a.innerHTML = "<div class=\"popup\" onclick=\"myFunction()\">Click me\! <span class=\"popuptext\" id=\"myPopup\">Popup text...</span> </div>"
-    var styles = `/* Popup container */
-    .popup {
-      position: relative;
-      display: inline-block;
-      cursor: pointer;
-    }
-    
-    /* The actual popup (appears on top) */
-    .popup .popuptext {
-      visibility: hidden;
-      width: 160px;
-      background-color: #555;
-      color: #fff;
-      text-align: center;
-      border-radius: 6px;
-      padding: 8px 0;
-      position: absolute;
-      z-index: 1;
-      bottom: 125%;
-      left: 50%;
-      margin-left: -80px;
-    }
-    
-    /* Popup arrow */
-    .popup .popuptext::after {
-      content: "";
-      position: absolute;
-      top: 100%;
-      left: 50%;
-      margin-left: -5px;
-      border-width: 5px;
-      border-style: solid;
-      border-color: #555 transparent transparent transparent;
-    }
-    
-    /* Toggle this class when clicking on the popup container (hide and show the popup) */
-    .popup .show {
-      visibility: visible;
-      -webkit-animation: fadeIn 1s;
-      animation: fadeIn 1s
-    }
-    
-    /* Add animation (fade in the popup) */
-    @-webkit-keyframes fadeIn {
-      from {opacity: 0;}
-      to {opacity: 1;}
-    }
-    
-    @keyframes fadeIn {
-      from {opacity: 0;}
-      to {opacity:1 ;}
-    }` 
-    var styleSheet = document.createElement("style")
-    styleSheet.innerText = styles;
-    document.head.appendChild(styleSheet);
-
+    let codesmells = "";
+    console.log(index);
 
 
     // ------------------------------------------------Long Parameter List------------------------------------------
@@ -376,7 +324,7 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
       }
       
     }
-    console.log('Wild Import Smells: ' + count_wildimports);
+    codesmells += "Wild Import Smells: " + count_wildimports + "\n";
 
 
 
@@ -385,7 +333,7 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
       let line = code_lines[i];
       if (line.search(/import/) !== -1 && index != 0) {
         element_array[i].style.backgroundColor="#FFA500";
-        prompt.appendChild(a);
+        codesmells += "imports not in first cell\n";
       }
     }
 
@@ -463,7 +411,7 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
       // searching for assignment expressions where "variable" is used on right hand side of the expressions.
       // if "variable" is present on RHS of a asignment then we can conclude that it is not a unused a variable
       // Also if "variable" is present in return statement of a function, then too we can conclude it is not a unused variable
-      let pattern = "^((([a-zA-Z_]([a-zA-Z_]|[0-9])*)\\s*=)|return)\\s*(.*[^_a-zA-Z0-9])?(" + variable + "([^_a-zA-Z0-9](.|[\\n])*)|" +  variable + "$)";
+      let pattern = "^((([a-zA-Z_]([a-zA-Z_]|[0-9])*)\\s*=)|return|print\\()\\s*(.*[^_a-zA-Z0-9])?(" + variable + "([^_a-zA-Z0-9](.|[\\n])*)|" +  variable + "$)";
       let regex = new RegExp(pattern, "g");
 
       // iterating each cell
@@ -493,61 +441,69 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
     }
 
     console.log("unused varibles", unusedVariables);
+    codesmells += "unused varibles" + unusedVariables;
 
-    //----------------------------------------------print without function--------------------------------------- 
-    lines = text.split('\n')
-    count = 0;
-    list = []
-    for(let i=0;i<lines.length;i++)
-    {
-      variables.forEach (function(value) {
-        if(value === lines[i])
-        count++,list.push(i);
-      })
+    var a = document.createElement("div");
+    a.innerHTML = "<div class=\"smellDetectorPopup popup\" id=\"kishorpopup\" onclick=\"myFunction()\">Click me\! <span class=\"popuptext\" id=\"myPopup\">" + codesmells + "</span> </div>"
+    var styles = `/* Popup container */
+    .popup {
+      position: relative;
+      display: inline-block;
+      cursor: pointer;
     }
-    console.log("print without function",count)
-    if(count>1)
-    {
-      console.log(list)
-      for( let  i=0;i<count;i++)
-      {
-        element_array[list[i]].style.backgroundColor="#45b6fe";
-      }
-    }
-
-    //----------------------------------------------Code containing drop or remove in cell ---------------------------------------
-    lines = text.split('\n')
-    count = 0;
-    list = [];
-    flag = 0;
-    for(let i=0;i<lines.length;i++)
-    {
-      if(lines[i].includes("drop") || lines[i].includes("remove"))
-      flag = 1;
-    }
-
-    if (flag == 1) {
-      // Find lines not containing drop or remove
-      for(let i=0;i<lines.length;i++)
-      {
-        if(!lines[i].includes("drop") && !lines[i].includes("remove")) {
-          count++;
-          list.push(i);
-        }
-      }
-    }
-
-    console.log("Code containing drop or remove in cell",count)
-    if(count>1)
-    {
-      console.log(list)
-      for( let  i=0;i<count;i++)
-      {
-        element_array[list[i]].style.backgroundColor="#FF69B4";
-      }
-    }
-
     
+    /* The actual popup (appears on top) */
+    .popup .popuptext {
+      visibility: hidden;
+      width: 160px;
+      background-color: #555;
+      color: #fff;
+      text-align: center;
+      border-radius: 6px;
+      padding: 8px 0;
+      position: absolute;
+      z-index: 1;
+      bottom: 125%;
+      left: 50%;
+      margin-left: -80px;
+    }
+    
+    /* Popup arrow */
+    .popup .popuptext::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      margin-left: -5px;
+      border-width: 5px;
+      border-style: solid;
+      border-color: #555 transparent transparent transparent;
+    }
+    
+    /* Toggle this class when clicking on the popup container (hide and show the popup) */
+    .popup .show {
+      visibility: visible;
+      -webkit-animation: fadeIn 1s;
+      animation: fadeIn 1s
+    }
+    
+    /* Add animation (fade in the popup) */
+    @-webkit-keyframes fadeIn {
+      from {opacity: 0;}
+      to {opacity: 1;}
+    }
+    
+    @keyframes fadeIn {
+      from {opacity: 0;}
+      to {opacity:1 ;}
+    }` 
+    var styleSheet = document.createElement("style")
+    styleSheet.innerText = styles;
+    document.head.appendChild(styleSheet);
+  
+    // if(!document.getElementsByClassName("smellDetectorPopup"))
+      prompt.appendChild(a);
+
 
 
     // ----------------------------------------------Long Message chain-------------------------------------------
@@ -563,12 +519,14 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
           }
         }
         if(count >= 4){
-          console.log("Long Message chain detected.");
+          codesmells += "Long Message chain detected.\n";
           element_array[i].style.backgroundColor="#FDFF47";
         }
       }
     }
   };
+
+  
 
   // Clickable button in toolbar
   var detectSmellButton = function () {
