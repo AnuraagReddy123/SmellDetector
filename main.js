@@ -1,7 +1,11 @@
 define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
   
-  // This function will detect the smells
+    // This function will detect the smells
   var findSmells = function () {
+    
+    if(document.getElementById("kishorpopup")){
+      document.getElementById("kishorpopup").remove();
+    }
 
     let cell = Jupyter.notebook.get_selected_cell();
     let text = cell.get_text();
@@ -14,7 +18,7 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
 
     // get the HTML element for the current cell
     let element_array = cell_elements[index].getElementsByClassName("CodeMirror-line");
-    let prompt = document.getElementsByClassName("prompt")[index];
+    let prompt = document.getElementsByClassName("selected")[0].getElementsByClassName("prompt")[0];
     let func_script = document.createElement("script");
     func_script.innerHTML = "function myFunction() { var popup = document.getElementById(\"myPopup\"); popup.classList.toggle(\"show\"); div.remove()}"
     document.head.appendChild(func_script);
@@ -25,6 +29,7 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
     //   popup.classList.toggle("show");
     // }
     let codesmells = "";
+    console.log(index);
 
 
     // ------------------------------------------------Long Parameter List------------------------------------------
