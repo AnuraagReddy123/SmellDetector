@@ -443,6 +443,7 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
       position: relative;
       display: inline-block;
       cursor: pointer;
+      z-index: 100;
     }
     
     /* The actual popup (appears on top) */
