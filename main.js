@@ -16,7 +16,7 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
     let element_array = cell_elements[index].getElementsByClassName("CodeMirror-line");
     let prompt = document.getElementsByClassName("prompt")[index];
     let func_script = document.createElement("script");
-    func_script.innerHTML = "function myFunction() { var popup = document.getElementById(\"myPopup\"); popup.classList.toggle(\"show\"); }"
+    func_script.innerHTML = "function myFunction() { var popup = document.getElementById(\"myPopup\"); popup.classList.toggle(\"show\"); div.remove()}"
     document.head.appendChild(func_script);
     // console.log(element_array);
 
@@ -24,64 +24,7 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
     //   var popup = document.getElementById("myPopup");
     //   popup.classList.toggle("show");
     // }
-    var a = document.createElement("div");
-    a.innerHTML = "<div class=\"popup\" onclick=\"myFunction()\">Click me\! <span class=\"popuptext\" id=\"myPopup\">Popup text...</span> </div>"
-    var styles = `/* Popup container */
-    .popup {
-      position: relative;
-      display: inline-block;
-      cursor: pointer;
-    }
-    
-    /* The actual popup (appears on top) */
-    .popup .popuptext {
-      visibility: hidden;
-      width: 160px;
-      background-color: #555;
-      color: #fff;
-      text-align: center;
-      border-radius: 6px;
-      padding: 8px 0;
-      position: absolute;
-      z-index: 1;
-      bottom: 125%;
-      left: 50%;
-      margin-left: -80px;
-    }
-    
-    /* Popup arrow */
-    .popup .popuptext::after {
-      content: "";
-      position: absolute;
-      top: 100%;
-      left: 50%;
-      margin-left: -5px;
-      border-width: 5px;
-      border-style: solid;
-      border-color: #555 transparent transparent transparent;
-    }
-    
-    /* Toggle this class when clicking on the popup container (hide and show the popup) */
-    .popup .show {
-      visibility: visible;
-      -webkit-animation: fadeIn 1s;
-      animation: fadeIn 1s
-    }
-    
-    /* Add animation (fade in the popup) */
-    @-webkit-keyframes fadeIn {
-      from {opacity: 0;}
-      to {opacity: 1;}
-    }
-    
-    @keyframes fadeIn {
-      from {opacity: 0;}
-      to {opacity:1 ;}
-    }` 
-    var styleSheet = document.createElement("style")
-    styleSheet.innerText = styles;
-    document.head.appendChild(styleSheet);
-
+    let codesmells = "";
 
 
     // ------------------------------------------------Long Parameter List------------------------------------------
@@ -378,7 +321,6 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
       let line = code_lines[i];
       if (line.search(/import/) !== -1 && index != 0) {
         element_array[i].style.backgroundColor="#FFA500";
-        prompt.appendChild(a);
       }
     }
 
@@ -486,8 +428,69 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
     }
 
     console.log("unused varibles", unusedVariables);
+    codesmells += "unused varibles" + unusedVariables;
 
+    var a = document.createElement("div");
+    a.innerHTML = "<div class=\"smellDetectorPopup popup\" id=\"kishorpopup\" onclick=\"myFunction()\">Click me\! <span class=\"popuptext\" id=\"myPopup\">" + codesmells + "</span> </div>"
+    var styles = `/* Popup container */
+    .popup {
+      position: relative;
+      display: inline-block;
+      cursor: pointer;
+    }
     
+    /* The actual popup (appears on top) */
+    .popup .popuptext {
+      visibility: hidden;
+      width: 160px;
+      background-color: #555;
+      color: #fff;
+      text-align: center;
+      border-radius: 6px;
+      padding: 8px 0;
+      position: absolute;
+      z-index: 1;
+      bottom: 125%;
+      left: 50%;
+      margin-left: -80px;
+    }
+    
+    /* Popup arrow */
+    .popup .popuptext::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      margin-left: -5px;
+      border-width: 5px;
+      border-style: solid;
+      border-color: #555 transparent transparent transparent;
+    }
+    
+    /* Toggle this class when clicking on the popup container (hide and show the popup) */
+    .popup .show {
+      visibility: visible;
+      -webkit-animation: fadeIn 1s;
+      animation: fadeIn 1s
+    }
+    
+    /* Add animation (fade in the popup) */
+    @-webkit-keyframes fadeIn {
+      from {opacity: 0;}
+      to {opacity: 1;}
+    }
+    
+    @keyframes fadeIn {
+      from {opacity: 0;}
+      to {opacity:1 ;}
+    }` 
+    var styleSheet = document.createElement("style")
+    styleSheet.innerText = styles;
+    document.head.appendChild(styleSheet);
+  
+    // if(!document.getElementsByClassName("smellDetectorPopup"))
+      prompt.appendChild(a);
+
 
 
     // ----------------------------------------------Long Message chain-------------------------------------------
@@ -509,6 +512,8 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
       }
     }
   };
+
+  
 
   // Clickable button in toolbar
   var detectSmellButton = function () {
