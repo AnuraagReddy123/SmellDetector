@@ -2,6 +2,7 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
   
   // This function will detect the smells
   var findSmells = function () {
+
     let cell = Jupyter.notebook.get_selected_cell();
     let text = cell.get_text();
 
@@ -13,16 +14,18 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
 
     // get the HTML element for the current cell
     let element_array = cell_elements[index].getElementsByClassName("CodeMirror-line");
-
-
+    let prompt = document.getElementsByClassName("prompt")[index];
+    let func_script = document.createElement("script");
+    func_script.innerHTML = "function myFunction() { var popup = document.getElementById(\"myPopup\"); popup.classList.toggle(\"show\"); }"
+    document.head.appendChild(func_script);
     // console.log(element_array);
 
-    function myFunction() {
-      var popup = document.getElementById("myPopup");
-      popup.classList.toggle("show");
-    }
+    // function myFunction() {
+    //   var popup = document.getElementById("myPopup");
+    //   popup.classList.toggle("show");
+    // }
     var a = document.createElement("div");
-    a.innerHTML = "<div class=\"popup\" onclick=\"myFunction\">Click me\! <span class=\"popuptext\" id=\"myPopup\">Popup text...</span> </div>"
+    a.innerHTML = "<div class=\"popup\" onclick=\"myFunction()\">Click me\! <span class=\"popuptext\" id=\"myPopup\">Popup text...</span> </div>"
     var styles = `/* Popup container */
     .popup {
       position: relative;
@@ -375,7 +378,7 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
       let line = code_lines[i];
       if (line.search(/import/) !== -1 && index != 0) {
         element_array[i].style.backgroundColor="#FFA500";
-        element_array[i].appendChild(a);
+        prompt.appendChild(a);
       }
     }
 
@@ -506,7 +509,6 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
       }
     }
   };
-
 
   // Clickable button in toolbar
   var detectSmellButton = function () {
