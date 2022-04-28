@@ -68,6 +68,39 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
       }
     }
 
+    //----------------------------------------------Code containing drop or remove in cell ---------------------------------------
+    lines = text.split('\n')
+    count = 0;
+    list = [];
+    flag = 0;
+    for(let i=0;i<lines.length;i++)
+    {
+      if(lines[i].includes("drop") || lines[i].includes("remove"))
+      flag = 1;
+    }
+
+    if (flag == 1) {
+      // Find lines not containing drop or remove
+      for(let i=0;i<lines.length;i++)
+      {
+        if(!lines[i].includes("drop") && !lines[i].includes("remove")) {
+          count++;
+          list.push(i);
+        }
+      }
+    }
+
+    console.log("Code containing drop or remove in cell",count)
+    if(count !== 0)
+      codesmells += "Code containing drop or remove in cell " + count + "</br>";
+    if(count>1)
+    {
+      console.log(list)
+      for( let  i=0;i<count;i++)
+      {
+        element_array[list[i]].style.backgroundColor="#FF69B4";
+      }
+    }
 
 
     //-----------------------------------------color contrastjupyter---------------------------------------
@@ -180,7 +213,8 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
     //       ans = contrast(c1,c2)
     //       if(ans<3){
     //         console.log(ans,"low contrast for colors",colors[i]," ",colors[j]);
-            codesmells += "<b>Contrast colors</b> low contrast for colors </br>";
+            if(index === 7)
+              codesmells += "<b>Contrast colors</b> low contrast for colors </br>";
     //         console.log(codesmells);
     //       }
     //     }
@@ -224,7 +258,7 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
         console.log('Line ' + i + ' , ' + funName + ' : ' + cnt);
 
         // threshold for long method = 100
-        if (cnt >= 100) {
+        if (cnt >= 1) {
           console.log('Long Methods code smell detected');
           codesmells += "<b>Long Method</b> " + funName + " at Line : " + i + " having " + cnt + " lines</br>";
           element_array[i].style.backgroundColor="#ADD8E6";
@@ -275,7 +309,7 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
         );
 
         // threshold for large class = 200
-        if (cnt >= 200) { 
+        if (cnt >= 2) { 
           console.log('Long class detected');
           codesmells += "<b>Long Class</b> " + class_Name + " at Line : " + i + " having " + cnt + " lines</br>";
           element_array[i].style.backgroundColor="#90EE90";
@@ -308,14 +342,16 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
       if(count > 40){
         console.log("Long Lambda Fuction detected !")
         codesmells += "<b>Long Lambda Fuction</b> at Line " + i + " </br>";
-        element_array[i].style.backgroundColor="#ff3300";
+        
+        [i].style.backgroundColor="#ff3300";
       }
     }
 
     
-    // Fat Cell
+    // ---------------------------------------------Fat Cell----------------------------------------------
+    lines = text.split('\n');
     n = lines.length;
-    if(n > 250){
+    if(n > 2){
       console.log("Fat Cell detected! : " + n + " lines");
       codesmells += "<b>Current cell is a fat cell</b></br>";
     }
@@ -461,6 +497,30 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
 
     console.log("unused varibles", unusedVariables);
     codesmells += "</br>";
+
+    //----------------------------------------------print without function--------------------------------------- 
+    lines = text.split('\n')
+    count = 0;
+    list = []
+    for(let i=0;i<lines.length;i++)
+    {
+      variables.forEach (function(value) {
+        if(value === lines[i])
+        count++,list.push(i);
+      })
+    }
+    if(count !== 0){
+      console.log("print without function",count);
+      codesmells += "print without function " + count + "</br>"
+    }
+    if(count>1)
+    {
+      console.log(list)
+      for( let  i=0;i<count;i++)
+      {
+        element_array[list[i]].style.backgroundColor="#45b6fe";
+      }
+    }
 
     var a = document.createElement("div");
     a.innerHTML = "<div class=\"smellDetectorPopup popup\" id=\"kishorpopup\" onclick=\"myFunction()\">Click me\! <span class=\"popuptext\" id=\"myPopup\">" + codesmells + "</span> </div>"
