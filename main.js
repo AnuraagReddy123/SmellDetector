@@ -308,6 +308,13 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
       }
     }
 
+    
+    //Fat Cell
+    n = lines.length;
+    if(n > 250){
+      console.log("Fat Cell detected! : " + n + " lines");
+    }
+
 
 
     // --------------------------------------------Wild Card Imports------------------------------------
@@ -321,15 +328,20 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
       }
       
     }
-    console.log('Wild Import Smells: ' + count_wildimports);
+    codesmells += "Wild Import Smells: " + count_wildimports + "\n";
 
 
 
-    // ----------------------check if import statements are present and not in first cell-------------------
+    // ----------------------check if import statements and terminal commands are present and not in first cell-------------------
     for (let i = 0; i < code_lines.length; i++) {
       let line = code_lines[i];
       if (line.search(/import/) !== -1 && index != 0) {
         element_array[i].style.backgroundColor="#FFA500";
+        codesmells += "imports not in first cell\n";
+      }
+      if(line.search(/\!pip/) != -1 && index != 0){
+        element_array[i].style.backgroundColor="#FFF500";
+        codesmells += "pip not in first cell\n";
       }
     }
 
@@ -451,7 +463,7 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
       position: relative;
       display: inline-block;
       cursor: pointer;
-      width: 200
+      z-index: 100;
     }
     
     /* The actual popup (appears on top) */
@@ -521,7 +533,7 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
           }
         }
         if(count >= 4){
-          console.log("Long Message chain detected.");
+          codesmells += "Long Message chain detected.\n";
           element_array[i].style.backgroundColor="#FDFF47";
         }
       }
