@@ -95,7 +95,7 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
 
     console.log("Code containing drop or remove in cell",count)
     if(count !== 0)
-      codesmells += "Code containing drop or remove in cell " + count + "</br>";
+      codesmells += "Code containing drop or remove in cell : " + count + "</br>";
     if(count>=1)
     {
       console.log(list)
@@ -214,8 +214,10 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
           c2.push(r2.g)
           c2.push(r2.b)
           ans = contrast(c1,c2)
-          if(ans<3)
-          console.log(ans,"low contrast for colors",colors[i]," ",colors[j])
+          if(ans<3){
+            console.log(ans,"low contrast for colors",colors[i]," ",colors[j]);
+            codesmells += "low contrast for colors" + colors[i] + " " + colors[j] + "</br>";
+          }
         }
       }
     }
@@ -257,7 +259,7 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
         console.log('Line ' + i + ' , ' + funName + ' : ' + cnt);
 
         // threshold for long method = 100
-        if (cnt >= 2) {
+        if (cnt >= 100) {
           console.log('Long Methods code smell detected');
           codesmells += "<b>Long Method</b> " + funName + " at Line : " + i + " having " + cnt + " lines</br>";
           element_array[i].style.backgroundColor="#ADD8E6";
@@ -308,7 +310,7 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
         );
 
         // threshold for large class = 200
-        if (cnt >= 2) { 
+        if (cnt >= 200) { 
           console.log('Long class detected');
           codesmells += "<b>Long Class</b> " + class_Name + " at Line : " + i + " having " + cnt + " lines</br>";
           element_array[i].style.backgroundColor="#90EE90";
@@ -338,7 +340,7 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
           count++;
         }
       }
-      if(count > 40){
+      if(count > 80){
         console.log("Long Lambda Fuction detected !")
         codesmells += "<b>Long Lambda Fuction</b> at Line " + i + " </br>";
         
@@ -350,7 +352,7 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
     // ---------------------------------------------Fat Cell----------------------------------------------
     lines = text.split('\n');
     n = lines.length;
-    if(n > 5){
+    if(n > 250){
       console.log("Fat Cell detected! : " + n + " lines");
       codesmells += "<b>Current cell is a fat cell</b></br>";
     }
@@ -406,7 +408,7 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
           let y = cells1[j].textContent;
           if(Number(x.substring(4, x.length-2)) > Number(y.substring(4, y.length-2))){
             out_of_order_cells.push(i);
-            cells1[i].style.backgroundColor="#00FFFF";
+            cells1[i].style.backgroundColor="#f589f2";
             if(i === index)
               codesmells += "<b>Current Cell ran in out of order</b> </br>";
           }
@@ -497,7 +499,7 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
         let lineNo = variableIndex[variable][1];
         // if(index === celNo){
           cell_elements[cellNo].getElementsByClassName("CodeMirror-line")[lineNo].style.backgroundColor="#C1008C";
-          codesmells += "cell: " + cellNo + " line: " + lineNo + " : " + variable + "</br>";
+          codesmells += " line: " + lineNo + " : " + variable + "</br>";
         // }
       }
     }
