@@ -308,7 +308,7 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
         );
 
         // threshold for large class = 200
-        if (cnt >= 2) { 
+        if (cnt >= 200) { 
           console.log('Long class detected');
           codesmells += "<b>Long Class</b> " + class_Name + " at Line : " + i + " having " + cnt + " lines</br>";
           element_array[i].style.backgroundColor="#90EE90";
@@ -350,7 +350,19 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
     // ---------------------------------------------Fat Cell----------------------------------------------
     lines = text.split('\n');
     n = lines.length;
-    if(n > 5){
+    flag_ = 0;
+   
+    for(let i = 0; i < n; i++){
+      line = lines[i].trim();
+      if(line.split(' ')[0] == 'def' || line.split(' ')[0] == 'class'){
+        flag_ = 1;
+      }
+    }
+    if(flag_ == 1 && n > 230){
+      console.log("Fat Cell detected !")
+      codesmells += "<b>Fat Cell</b> </br>";
+    }
+    if(n > 80){
       console.log("Fat Cell detected! : " + n + " lines");
       codesmells += "<b>Current cell is a fat cell</b></br>";
     }
