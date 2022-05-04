@@ -44,22 +44,25 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
         count_long_params += (line.match(/,/g) || []).length;
 
         if (count_long_params === 0) {
-          if (line.search(/\(\s*\)/) === -1) {
+          if (line.search(/\(\s*\)/) === -1) {cd
             count_long_params++;
           }
         } else {
           count_long_params++;
         }
+
+        let funName = line.trim().split(' ')[1].split('(')[0]
         console.log(
           'Line ' +
             i +
             ' ' +
-            line.trim().split(' ')[1].split('(')[0] +
+            funName +
             ', params: ' +
             count_long_params
         );
         if (count_long_params >= 5) {
           console.log('Long Parameter code smell detected');
+          codesmells += "<b>Long Parameter list</b> at Line : " + i + " having " + count_long_params + " parameters</br>"
           // highlight the line
           console.log(element_array[i]);
           element_array[i].style.backgroundColor="#FF7F7F";
@@ -68,6 +71,39 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
       }
     }
 
+    //----------------------------------------------Code containing drop or remove in cell ---------------------------------------
+    lines = text.split('\n')
+    count = 0;
+    list = [];
+    flag = 0;
+    for(let i=0;i<lines.length;i++)
+    {
+      if(lines[i].includes("drop") || lines[i].includes("remove"))
+      flag = 1;
+    }
+
+    if (flag == 1) {
+      // Find lines not containing drop or remove
+      for(let i=0;i<lines.length;i++)
+      {
+        if(!lines[i].includes("drop") && !lines[i].includes("remove")) {
+          count++;
+          list.push(i);
+        }
+      }
+    }
+
+    console.log("Code containing drop or remove in cell",count)
+    if(count !== 0)
+      codesmells += "Code containing drop or remove in cell " + count + "</br>";
+    if(count>=1)
+    {
+      console.log(list)
+      for( let  i=0;i<count;i++)
+      {
+        element_array[list[i]].style.backgroundColor="#FF69B4";
+      }
+    }
 
 
     //-----------------------------------------color contrastjupyter---------------------------------------
@@ -217,11 +253,13 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
           }
         }
 
-        console.log('Line ' + i + ' , ' + lines[i].trim().split(' ')[1].split('(')[0] + ' : ' + cnt);
+        let funName = lines[i].trim().split(' ')[1].split('(')[0];
+        console.log('Line ' + i + ' , ' + funName + ' : ' + cnt);
 
         // threshold for long method = 100
-        if (cnt >= 100) {
+        if (cnt >= 2) {
           console.log('Long Methods code smell detected');
+          codesmells += "<b>Long Method</b> " + funName + " at Line : " + i + " having " + cnt + " lines</br>";
           element_array[i].style.backgroundColor="#ADD8E6";
         }
         i = j - 1;
@@ -259,18 +297,20 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
           }
         }
 
+        let class_Name = lines[i].trim().split(' ')[1].split('(')[0];
         console.log(
           'Line : ' +
             i +
             ' , ' +
-            lines[i].trim().split(' ')[1].split('(')[0] +
+            class_Name +
             ' : ' +
             cnt
         );
 
         // threshold for large class = 200
-        if (cnt >= 200) { 
+        if (cnt >= 2) { 
           console.log('Long class detected');
+          codesmells += "<b>Long Class</b> " + class_Name + " at Line : " + i + " having " + cnt + " lines</br>";
           element_array[i].style.backgroundColor="#90EE90";
         }
         i = j - 1;
@@ -300,18 +340,22 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
       }
       if(count > 40){
         console.log("Long Lambda Fuction detected !")
+        codesmells += "<b>Long Lambda Fuction</b> at Line " + i + " </br>";
+        
         element_array[i].style.backgroundColor="#ff3300";
       }
     }
 
     
-    //Fat Cell
+    // ---------------------------------------------Fat Cell----------------------------------------------
+    lines = text.split('\n');
     n = lines.length;
-    if(n > 250){
+    if(n > 5){
       console.log("Fat Cell detected! : " + n + " lines");
+      codesmells += "<b>Current cell is a fat cell</b></br>";
     }
 
-
+    
 
     // --------------------------------------------Wild Card Imports------------------------------------
     let count_wildimports = 0;
@@ -320,11 +364,11 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
       if (line.search(/import\*/) !== -1 || line.search(/import \*/) !== -1) {
         count_wildimports++;
         element_array[i].style.backgroundColor="#00FFFF";
-
+        codesmells += "Wild Import Smells: " + count_wildimports + "</br>";
       }
       
     }
-    codesmells += "Wild Import Smells: " + count_wildimports + "\n";
+    
 
 
 
@@ -333,11 +377,11 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
       let line = code_lines[i];
       if (line.search(/import/) !== -1 && index != 0) {
         element_array[i].style.backgroundColor="#FFA500";
-        codesmells += "imports not in first cell\n";
+        codesmells += "imports not in first cell </br>";
       }
       if(line.search(/\!pip/) != -1 && index != 0){
         element_array[i].style.backgroundColor="#FFF500";
-        codesmells += "pip not in first cell\n";
+        codesmells += "<b>pip not in first cell</b></br>";
       }
     }
 
@@ -363,6 +407,8 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
           if(Number(x.substring(4, x.length-2)) > Number(y.substring(4, y.length-2))){
             out_of_order_cells.push(i);
             cells1[i].style.backgroundColor="#00FFFF";
+            if(i === index)
+              codesmells += "<b>Current Cell ran in out of order</b> </br>";
           }
           else{
             cells1[i].style.backgroundColor="transparent";
@@ -373,12 +419,15 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
     }
 
     console.log('Cells run in out of order : ', out_of_order_cells);
-
+    // if(out_of_order_cells.length !== 0)
+      // codesmells += "<b>Cells run in out of order</b> </br>";
 
 
 
     // --------------------------------------unused variables-------------------------------------------
 
+    
+    // codesmells += "Cell Line variable</br>";
     variables = new Set();
     variableIndex = {};
     unusedVariables = new Set();
@@ -437,15 +486,68 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
 
         }
       }
-
-      if(lhsVarCount[variable] === 0){
+      let flag_ = 0;
+      if(lhsVarCount[variable] === 0 && variableIndex[variable][0] == index){
+        if(flag_ === 0){
+          codesmells += "<b>Unused Variables</b></br>";
+          flag_ = 1;
+        }
         unusedVariables.add(variable);
-        cell_elements[variableIndex[variable][0]].getElementsByClassName("CodeMirror-line")[variableIndex[variable][1]].style.backgroundColor="#C1008C";
+        let cellNo = variableIndex[variable][0];
+        let lineNo = variableIndex[variable][1];
+        // if(index === celNo){
+          cell_elements[cellNo].getElementsByClassName("CodeMirror-line")[lineNo].style.backgroundColor="#C1008C";
+          codesmells += "cell: " + cellNo + " line: " + lineNo + " : " + variable + "</br>";
+        // }
       }
     }
 
     console.log("unused varibles", unusedVariables);
-    codesmells += "unused varibles" + unusedVariables;
+    codesmells += "</br>";
+
+    //----------------------------------------------print without print function--------------------------------------- 
+    lines = text.split('\n')
+    count = 0;
+    list = []
+    for(let i=0;i<lines.length;i++)
+    {
+      variables.forEach (function(value) {
+        if(value === lines[i])
+        count++,list.push(i);
+      })
+    }
+    if(count !== 0){
+      console.log("print without function",count);
+      codesmells += "print without function " + count + "</br>"
+    }
+    if(count>1)
+    {
+      console.log(list)
+      for( let  i=0;i<count;i++)
+      {
+        element_array[list[i]].style.backgroundColor="#45b6fe";
+      }
+    }
+
+    // ----------------------------------------------Long Message chain-------------------------------------------
+    lines = text.split('\n');
+    for (let i = 0; i < lines.length; ++i) {
+      let myArray = lines[i].split('.');
+      if (myArray.length > 1) {
+        let count = 0;
+        myArray = myArray.slice(1);
+        for (let j = 0; j < myArray.length; ++j) {
+          if (myArray[j].indexOf('(') != -1) {
+            ++count;
+          }
+        }
+        console.log("longMessage", count);
+        if(count >= 4){
+          codesmells += "<b>Long Message Chain</b> at Line no. " + i;
+          element_array[i].style.backgroundColor="#FDFF47";
+        }
+      }
+    }
 
     var a = document.createElement("div");
     a.innerHTML = "<div class=\"smellDetectorPopup popup\" id=\"kishorpopup\" onclick=\"myFunction()\">Click me\! <span class=\"popuptext\" id=\"myPopup\">" + codesmells + "</span> </div>"
@@ -460,14 +562,14 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
     /* The actual popup (appears on top) */
     .popup .popuptext {
       visibility: hidden;
-      width: 160px;
+      width: 400px;
       background-color: #555;
       color: #fff;
       text-align: center;
       border-radius: 6px;
       padding: 8px 0;
       position: absolute;
-      z-index: 1;
+      z-index: 100;
       bottom: 125%;
       left: 50%;
       margin-left: -80px;
@@ -507,28 +609,10 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
     document.head.appendChild(styleSheet);
   
     // if(!document.getElementsByClassName("smellDetectorPopup"))
-      prompt.appendChild(a);
+    console.log('here')
+    prompt.appendChild(a);
 
 
-
-    // ----------------------------------------------Long Message chain-------------------------------------------
-    lines = text.split('\n');
-    for (let i = 0; i < lines.length; ++i) {
-      let myArray = lines[i].split('.');
-      if (myArray.length > 1) {
-        let count = 0;
-        myArray = myArray.slice(1);
-        for (let j = 0; j < myArray.length; ++j) {
-          if (myArray[j].indexOf('(') != -1) {
-            ++count;
-          }
-        }
-        if(count >= 4){
-          codesmells += "Long Message chain detected.\n";
-          element_array[i].style.backgroundColor="#FDFF47";
-        }
-      }
-    }
   };
 
   
