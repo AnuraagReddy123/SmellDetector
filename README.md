@@ -44,6 +44,14 @@ Large Class            |    lines of code > 200                           |     
 Long Lambda Function   |    number of characters in one expression > 80   |              Red
 Wild Card Imports      |    -                                             |              Cyan
 Long Message Chain     |    length of message chain > 4                   |              Yellow
+Fat Cell  | Number of lines > 250 | No color
+Printing without print function | - | Picton Blue
+Library imports not in the first cell | - | Orange
+Unused variables | - | Medium Violet-Red
+Running cells out of order | - | Light Fuchsia Pink
+No separate cell for column drops | - | Hot pink
+Indistinguishable colors for graphs | - | No color
+!pip in random cells | - | Blue
 
 
 ## Installation
