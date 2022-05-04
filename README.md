@@ -8,7 +8,7 @@ We plan to explore various code smells that are specific to these notebooks
 We are making a tool which will help developers find out about the possible anti-patterns and code smells in their notebook code
 
 
-## Code Smells Detected
+## Code Smells Detected (Release 1)
 
 1.   Long Parameter List     -   A method or a function that has a long parameter list.
 2.   Long Method             -   A method or a function that is too long
@@ -17,11 +17,22 @@ We are making a tool which will help developers find out about the possible anti
 5.   Long Message Chain      -   An expression that is accessing an object through a long chain of attributes or methods by the dot operator.
 6.   Wildcard Imports        -   A wild card import from a module means loading all classes and functions from that module. All the components loaded may or may not be used and may cause conflicts.
 
+Code Smells Detected (Release 2)
+1. Fat cell  -  If the number of lines in a cell exceeds the threshold then it is called fat cell
+2. Printing without print function - Trying to print multiple variables without print function in the same cell. Notebooks allow you to print variables without using  print statements. While parsing if there is no assignment we detect that for a variable.
+3. Library imports not in the first cell - All library imports to be done in the first cell All imports should be in the first cell for reference.
+4. Unused variables: Variables that are not used.
+5. Running cells out of order - Losing exploration history makes it difficult to debug /to see the procedure to arrive at the code.
+6. No separate cell for column drops - The cell containing column drop should not have any other code. If executed multiple times multiple columns will be removed.
+7. Indistinguishable colors for graphs - Contrast colors between graph lines when using matplotlib. Using indistinguishable colors  can lead to mistaking one graph for another. 
+8. !pip in random cells - Installation of files using !pip in a jupyter notebook in random cells and not in the beginning. Notebooks allow users to use terminal commands in cells. Sometimes the user mixes normal python code with these terminal commands and it leads to a lot of problems when trying to debug/ read code
+
 
 ## Features
 
-*  Detection of six code smells : Long parameter list, Long methods, Wild card imports, Large class, Long message chain and Long lambda function.
+*  Detection of fourteen code smells : Long parameter list, Long methods, Wild card imports, Large class, Long message chain, Long lambda function, Fat cell, Printing, ,without print function,Library imports not in first cell,Unused variables,Running cells out of order,No separate cell for column drops,Indistinguishable colors for graphs and !pip in random cells
 *  Highlighting the lines of code in jupyter notebook where code smells are detected.
+*  Showing all code smells of current cell in message box
 *  Displaying the metrics values of detected code smells in the console.
 
 
