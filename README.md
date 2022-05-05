@@ -17,7 +17,7 @@ We are making a tool which will help developers find out about the possible anti
 5.   Long Message Chain      -   An expression that is accessing an object through a long chain of attributes or methods by the dot operator.
 6.   Wildcard Imports        -   A wild card import from a module means loading all classes and functions from that module. All the components loaded may or may not be used and may cause conflicts.
 
-Code Smells Detected (Release 2)
+## Code Smells Detected (Release 2)
 1. Fat cell  -  If the number of lines in a cell exceeds the threshold then it is called fat cell
 2. Printing without print function - Trying to print multiple variables without print function in the same cell. Notebooks allow you to print variables without using  print statements. While parsing if there is no assignment we detect that for a variable.
 3. Library imports not in the first cell - All library imports to be done in the first cell All imports should be in the first cell for reference.
