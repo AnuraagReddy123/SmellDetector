@@ -375,16 +375,25 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
 
 
     // ----------------------check if import statements and terminal commands are present and not in first cell-------------------
+    let flag1=0;
+    let flag2=0;
     for (let i = 0; i < code_lines.length; i++) {
       let line = code_lines[i];
       if (line.search(/import/) !== -1 && index != 0) {
         element_array[i].style.backgroundColor="#FFA500";
-        codesmells += "imports not in first cell </br>";
+        flag1=1; 
       }
       if(line.search(/\!pip/) != -1 && index != 0){
         element_array[i].style.backgroundColor="#FFF500";
-        codesmells += "<b>pip not in first cell</b></br>";
+        flag2=1;
       }
+    }
+
+    if(flag1 === 1){
+      codesmells += "imports not in first cell </br>";
+    }
+    if(flag2 === 1){
+      codesmells += "<b>pip not in first cell</b></br>";
     }
 
 
@@ -466,7 +475,8 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
       // searching for assignment expressions where "variable" is used on right hand side of the expressions.
       // if "variable" is present on RHS of a asignment then we can conclude that it is not a unused a variable
       // Also if "variable" is present in return statement of a function, then too we can conclude it is not a unused variable
-      let pattern = "^((([a-zA-Z_]([a-zA-Z_]|[0-9])*)\\s*=)|return|print\\()\\s*(.*[^_a-zA-Z0-9])?(" + variable + "([^_a-zA-Z0-9](.|[\\n])*)|" +  variable + "$)";
+      let pattern = "(^((([a-zA-Z_]([a-zA-Z_]|[0-9])*)\\s*=)|return|print\\()\\s*(.*[^_a-zA-Z0-9])?(" + variable + "([^_a-zA-Z0-9](.|[\\n])*)|" +  variable + "$))|(^[^#].*\(.*" + variable + ".*\))";
+      // let pattern2 = "[^#]\(.*" + variable + ".*\)";
       let regex = new RegExp(pattern, "g");
 
       // iterating each cell
@@ -505,7 +515,6 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
     }
 
     console.log("unused varibles", unusedVariables);
-    codesmells += "</br>";
 
     //----------------------------------------------print without print function--------------------------------------- 
     lines = text.split('\n')
@@ -545,10 +554,14 @@ define(['base/js/namespace', 'base/js/events'], function (Jupyter, events) {
         }
         console.log("longMessage", count);
         if(count >= 4){
-          codesmells += "<b>Long Message Chain</b> at Line no. " + i;
+          codesmells += "<b>Long Message Chain</b> at Line no. " + i + "</br>";
           element_array[i].style.backgroundColor="#FDFF47";
         }
       }
+    }
+
+    if(codesmells === ""){
+      codesmells += "<b> NO CODE SMELLS </b> ";
     }
 
     var a = document.createElement("div");
